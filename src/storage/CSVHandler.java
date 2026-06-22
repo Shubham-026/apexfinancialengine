@@ -24,7 +24,7 @@ import java.io.FileReader;
 
                 return loadedTransactions;
             } catch (IOException e) {
-                System.out.println("Unable to Load the Treansactions");
+                System.out.println("Unable to Load the Transactions");
                 System.out.println("Some error occured!!!");
                 System.out.println("Error: " + e.getMessage());
                 

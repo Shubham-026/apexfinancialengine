@@ -6,7 +6,6 @@ public class Transaction {
     private long timestamp;
     private String category;
     private String description;
-    
     private TransactionType type;
     
     public Transaction(String id,TransactionType type, double amount, String category, String description, long timestamp){

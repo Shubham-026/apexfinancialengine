@@ -11,6 +11,8 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
         CSVHandler csvHandler = new CSVHandler();
+        DetailsHandler detailsHandler = new DetailsHandler();
+        UserDetails userDetails = detailsHandler.detailLoader();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy HH:mm:ss").withZone(ZoneId.systemDefault());
         Account account = new Account();
         account.setHistory(csvHandler.loadTransactions());
@@ -19,6 +21,7 @@ public class Main {
             // System.out.println("Working directory: " + System.getProperty("user.dir"));
             System.out.println("+=============================================================+");
             System.out.println("|                 APEX FINANCIAL ENGINE                       |");
+            System.out.println("  Name: " + userDetails.getUserName());
             System.out.println("+=============================================================+");
             System.out.println("|   1. View Balance and History                               |");
             System.out.println("|   2. New Transaction (Deposit/Expense)                      |");
@@ -35,15 +38,16 @@ public class Main {
             System.out.println();
             if(choiceMain == 1){
                 clearScreen();
-                System.out.println("+======================================================================================+");
-                System.out.println("|                                 APEX FINANCIAL ENGINE                                |");
-                System.out.println("+======================================================================================+");
-                System.out.println("      CURRENT BALANCE :                        "+String.format("%.2f", account.calculateBalance()));
-                System.out.println("+======================================================================================+");
+                System.out.println("+================================================================================================+");
+                System.out.println("|                                      APEX FINANCIAL ENGINE                                     |");
+                System.out.println("+================================================================================================+");
+                System.out.println("|      CURRENT BALANCE : "+String.format("%-72.2f", account.calculateBalance())+"|");
+                System.out.println("+================================================================================================+");
                 for (Transaction transact  : account.getHistory()) {
-                    System.out.println(transact.getId()+"  "+transact.getType()+"  "+String.format("%-15s", transact.getCategory())+"  "+String.format("%-30s", transact.getDescription())+"  "+formatter.format(Instant.ofEpochMilli(transact.getTimestamp()))+"  "+transact.getAmount());
+                    System.out.println("|"+transact.getId()+"  "+transact.getType()+"  "+String.format("%-15s", transact.getCategory())+"  "+String.format("%-30.30s", transact.getDescription())+"  "+formatter.format(Instant.ofEpochMilli(transact.getTimestamp()))+"  "+String.format("%-10.2f", transact.getAmount())+"|");
+                    System.out.println("+------------------------------------------------------------------------------------------------+");
                 }
-                System.out.println("+======================================================================================+");
+                // System.out.println("+================================================================================================+");
                 System.out.println("Press \"ENTER\" to continue:");
                 sc.nextLine();
                 continue;
