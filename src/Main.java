@@ -1,4 +1,8 @@
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import models.*;
 import storage.*;
 
 
@@ -7,9 +11,12 @@ public class Main {
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
         CSVHandler csvHandler = new CSVHandler();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy HH:mm:ss").withZone(ZoneId.systemDefault());
+        Account account = new Account();
+        account.setHistory(csvHandler.loadTransactions());
         while (true) {
             clearScreen();
-            System.out.println("Working directory: " + System.getProperty("user.dir"));
+            // System.out.println("Working directory: " + System.getProperty("user.dir"));
             System.out.println("+=============================================================+");
             System.out.println("|                 APEX FINANCIAL ENGINE                       |");
             System.out.println("+=============================================================+");
@@ -27,7 +34,16 @@ public class Main {
             sc.nextLine();
             System.out.println();
             if(choiceMain == 1){
-                System.out.println("Feature not available yet");
+                clearScreen();
+                System.out.println("+======================================================================================+");
+                System.out.println("|                                 APEX FINANCIAL ENGINE                                |");
+                System.out.println("+======================================================================================+");
+                System.out.println("      CURRENT BALANCE :                        "+String.format("%.2f", account.calculateBalance()));
+                System.out.println("+======================================================================================+");
+                for (Transaction transact  : account.getHistory()) {
+                    System.out.println(transact.getId()+"  "+transact.getType()+"  "+String.format("%-15s", transact.getCategory())+"  "+String.format("%-30s", transact.getDescription())+"  "+formatter.format(Instant.ofEpochMilli(transact.getTimestamp()))+"  "+transact.getAmount());
+                }
+                System.out.println("+======================================================================================+");
                 System.out.println("Press \"ENTER\" to continue:");
                 sc.nextLine();
                 continue;

@@ -26,4 +26,18 @@ public class Account {
     public void setHistory(ArrayList<Transaction> history) {
         this.history = history;
     }
+
+    public double calculateBalance(){
+        double balance = 0.0;
+        for (Transaction transaction : history) {
+            if(transaction.getType() == TransactionType.DEPOSIT){
+                balance = balance + transaction.getAmount();
+            }
+            else{
+                balance = balance - transaction.getAmount();
+            }
+        }
+        setBalance(balance);
+        return balance;
+    }
 }
