@@ -1,10 +1,15 @@
 import java.util.*;
+import storage.*;
+
+
 public class Main {
     @SuppressWarnings("resource")
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
+        CSVHandler csvHandler = new CSVHandler();
         while (true) {
             clearScreen();
+            System.out.println("Working directory: " + System.getProperty("user.dir"));
             System.out.println("+=============================================================+");
             System.out.println("|                 APEX FINANCIAL ENGINE                       |");
             System.out.println("+=============================================================+");
@@ -18,46 +23,109 @@ public class Main {
             System.out.println("+=============================================================+");
             System.out.print("   Choose an option: ");
             
-            int choice = sc.nextInt();
+            int choiceMain = sc.nextInt();
             sc.nextLine();
             System.out.println();
-            if(choice == 1){
+            if(choiceMain == 1){
                 System.out.println("Feature not available yet");
                 System.out.println("Press \"ENTER\" to continue:");
                 sc.nextLine();
                 continue;
             }
-            else if (choice == 2) {
+            else if (choiceMain == 2) {
                 System.out.println("Feature not available yet");
                 System.out.println("Press \"ENTER\" to continue:");
                 sc.nextLine();
                 continue;
             }
-            else if (choice == 3) {
+            else if (choiceMain == 3) {
                 System.out.println("Feature not available yet");
                 System.out.println("Press \"ENTER\" to continue:");
                 sc.nextLine();
                 continue;
             }
-            else if (choice == 4) {
+            else if (choiceMain == 4) {
                 System.out.println("Feature not available yet");
                 System.out.println("Press \"ENTER\" to continue:");
                 sc.nextLine();
                 continue;
             }
-            else if (choice == 5) {
+            else if (choiceMain == 5) {
                 System.out.println("Feature not available yet");
                 System.out.println("Press \"ENTER\" to continue:");
                 sc.nextLine();
                 continue;
             }
-            else if (choice == 6) {
-                System.out.println("Feature not available yet");
-                System.out.println("Press \"ENTER\" to continue:");
+            else if (choiceMain == 6) {
+                System.out.println("+=============================================================+");
+                System.out.println("|                 APEX FINANCIAL ENGINE                       |");
+                System.out.println("+=============================================================+");
+                System.out.println("|   1. Reset all data                                         |");
+                System.out.println("|   2. Load sample data                                       |");
+                System.out.println("|   3. Back to main menu                                      |");
+                System.out.println("+=============================================================+");
+                System.out.print("   Choose an option: ");
+                int choiceMore = sc.nextInt();
                 sc.nextLine();
-                continue;
+                if(choiceMore == 1){
+
+                    System.out.println("This process will delete all data");
+                    System.out.println("Are you sure you want to continue? y/n :");
+                    char choiceReset = sc.nextLine().charAt(0);
+
+                    if (choiceReset == 'y') {
+                        System.out.println("To continue retype this sentense as it is:");
+                        System.out.println(" -->   DELETE ALL DATA:");
+                        String response = sc.nextLine();
+
+                        if (response.equals("DELETE ALL DATA"))  {
+                            System.out.println("Deleting the data...");
+                            boolean resetStatus = csvHandler.resetFile();
+
+                            if (resetStatus == true) {
+                                System.out.println("Deletition Success!!!");
+                                System.out.println("Press Enter to go back to Main Menu");
+                                sc.nextLine();
+                                continue;
+                            }
+                            else{
+                                System.out.println("Press Enter to go back to Main Menu");
+                                sc.nextLine();
+                                continue;
+                            }
+                          
+                        }
+                        else {
+                            System.out.println("Confirmation Failed, Try Again.");
+                            System.out.println("Press Enter to go back to Main Menu");
+                            sc.nextLine();
+                            continue;
+                        }
+                    }
+                    else{
+                        System.out.println("Press Enter to go back to Main Menu");
+                        sc.nextLine();
+                        continue;
+
+                    }
+                }
+                else if(choiceMore == 2){
+                    System.out.println("Feature not available yet");
+                    System.out.println("Press \"ENTER\" to continue:");
+                    sc.nextLine();
+                    continue;
+                }
+                else if (choiceMore == 3) {
+                    System.out.println("press enter to go back to main menu:");
+                    sc.nextLine();
+                    continue;
+                }
+                else{
+                    continue;
+
+                }
             }
-            else if (choice == 7) {
+            else if (choiceMain == 7) {
                 System.out.println("Press \"ENTER\" to continue:");
                 sc.nextLine();
                 System.out.println("Exiting...");
