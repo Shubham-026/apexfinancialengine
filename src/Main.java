@@ -5,7 +5,6 @@ import java.util.*;
 import models.*;
 import storage.*;
 
-
 public class Main {
     @SuppressWarnings("resource")
     public static void main(String[] args) throws Exception {
@@ -19,10 +18,7 @@ public class Main {
         while (true) {
             clearScreen();
             // System.out.println("Working directory: " + System.getProperty("user.dir"));
-            System.out.println("+=============================================================+");
-            System.out.println("|                 APEX FINANCIAL ENGINE                       |");
-            System.out.println("  Name: " + userDetails.getUserName());
-            System.out.println("+=============================================================+");
+            printBanner("MAIN MENU");
             System.out.println("|   1. View Balance and History                               |");
             System.out.println("|   2. New Transaction (Deposit/Expense)                      |");
             System.out.println("|   3. Search Transaction                                     |");
@@ -32,54 +28,114 @@ public class Main {
             System.out.println("|   7. EXIT                                                   |");
             System.out.println("+=============================================================+");
             System.out.print("   Choose an option: ");
-            
+
             int choiceMain = sc.nextInt();
             sc.nextLine();
             System.out.println();
-            if(choiceMain == 1){
+            if (choiceMain == 1) {
                 clearScreen();
-                System.out.println("+================================================================================================+");
-                System.out.println("|                                      APEX FINANCIAL ENGINE                                     |");
-                System.out.println("+================================================================================================+");
-                System.out.println("|      CURRENT BALANCE : "+String.format("%-72.2f", account.calculateBalance())+"|");
-                System.out.println("+================================================================================================+");
-                for (Transaction transact  : account.getHistory()) {
-                    System.out.println("|"+transact.getId()+"  "+transact.getType()+"  "+String.format("%-15s", transact.getCategory())+"  "+String.format("%-30.30s", transact.getDescription())+"  "+formatter.format(Instant.ofEpochMilli(transact.getTimestamp()))+"  "+String.format("%-10.2f", transact.getAmount())+"|");
-                    System.out.println("+------------------------------------------------------------------------------------------------+");
+                System.out.println("+===================================================================================================+");
+                System.out.println("|                                       APEX FINANCIAL ENGINE                                       |");
+                System.out.println("+===================================================================================================+");
+                System.out.print("| Name: " + String.format("%-15s", userDetails.getUserName()) + " Account Number: "
+                        + userDetails.getAccountNumber() + " ");
+                System.out.println("Gender: " + userDetails.getGender() + " DOB: "
+                        + String.format("%-10s", userDetails.getDateOfBirth()) + " Phone Number: "
+                        + String.format("%-10s", userDetails.getPhoneNumber()) + " |");
+                System.out.println("+===================================================================================================+");
+                System.out.println("|  --> VIEW BALANCE AND HISTORY                                                                     |");
+                System.out.println("+===================================================================================================+");
+                for (Transaction transact : account.getHistory()) {
+                    System.out.println("|" + transact.getId() + "  " + transact.getType() + "  "
+                            + String.format("%-15s", transact.getCategory()) + "  "
+                            + String.format("%-30.30s", transact.getDescription()) + "  "
+                            + formatter.format(Instant.ofEpochMilli(transact.getTimestamp())) + "  "
+                            + String.format("%-13.2f", transact.getAmount()) + "|");
+                    System.out.println(
+                            "+---------------------------------------------------------------------------------------------------+");
                 }
-                // System.out.println("+================================================================================================+");
+                System.out.println("|        CURRENT BALANCE : " + String.format("%-70.2f", account.calculateBalance()) + "   |");
+                System.out.println("+===================================================================================================+");
                 System.out.println("Press \"ENTER\" to continue:");
                 sc.nextLine();
                 continue;
-            }
-            else if (choiceMain == 2) {
+            } else if (choiceMain == 2) {
+                clearScreen();
+                printBanner("New Transaction (Deposit/Expense)");
+                System.out.println("DEPOSIT OR EXPENSE :   d/e?");
+                char transactionType = sc.nextLine().charAt(0);
+                clearScreen();
+                TransactionType type;
+                if ('d' == transactionType) {
+                    printBanner("Transaction Type \"DEPOSIT\" ");
+                    type = TransactionType.DEPOSIT;
+                } else if ('e' == transactionType) {
+                    printBanner("Transaction Type \"EXPENSE\" ");
+                    type = TransactionType.EXPENSE;
+
+                } else {
+                    System.out.println("Wrong Choice");
+                    System.out.println("Press \"ENTER\" to go back to main menu:");
+                    sc.nextLine();
+                    continue;
+
+                }
+                System.out.print("Enter Amount: ");
+                double transactionAmount = sc.nextDouble();
+                sc.nextLine();
+                System.out.print("Enter Category: ");
+                String transactionCategory = sc.nextLine();
+                System.out.print("Enter Short Description: ");
+                String transactionDescription = sc.nextLine();
+                String newTransactionID;
+                if (account.getHistory().isEmpty()) {
+                    newTransactionID = "TXN0001";
+                } else {
+
+                    int nextNum = Integer.parseInt(account.getHistory().get(account.getHistory().size()-1).getId().substring(3)) + 1;
+                    newTransactionID = "TXN" + String.format("%04d", nextNum);
+                }
+                Transaction newTransaction = new Transaction(newTransactionID,
+                        type,
+                        transactionAmount,
+                        transactionCategory,
+                        transactionDescription,
+                        System.currentTimeMillis());
+                boolean appendStatus = csvHandler.appendTransaction(newTransaction); 
+
+                        if (appendStatus) {
+                            account.getHistory().add(newTransaction);
+                            System.out.println("Transaction added successfully!!!");
+                            System.out.println("Press \"ENTER\" to continue:");
+                        } else {
+                            System.out.println("Press \"ENTER\" to continue:");
+                        }
+                sc.nextLine();
+                continue;
+            } else if (choiceMain == 3) {
+                clearScreen();
+                printBanner("Search Transaction ");
                 System.out.println("Feature not available yet");
                 System.out.println("Press \"ENTER\" to continue:");
                 sc.nextLine();
                 continue;
-            }
-            else if (choiceMain == 3) {
+            } else if (choiceMain == 4) {
+                clearScreen();
+                printBanner("Run Spend Analytics");
                 System.out.println("Feature not available yet");
                 System.out.println("Press \"ENTER\" to continue:");
                 sc.nextLine();
                 continue;
-            }
-            else if (choiceMain == 4) {
+            } else if (choiceMain == 5) {
+                clearScreen();
+                printBanner("View Category Spending Breakdown");
                 System.out.println("Feature not available yet");
                 System.out.println("Press \"ENTER\" to continue:");
                 sc.nextLine();
                 continue;
-            }
-            else if (choiceMain == 5) {
-                System.out.println("Feature not available yet");
-                System.out.println("Press \"ENTER\" to continue:");
-                sc.nextLine();
-                continue;
-            }
-            else if (choiceMain == 6) {
-                System.out.println("+=============================================================+");
-                System.out.println("|                 APEX FINANCIAL ENGINE                       |");
-                System.out.println("+=============================================================+");
+            } else if (choiceMain == 6) {
+                clearScreen();
+                printBanner("MORE");
                 System.out.println("|   1. Reset all data                                         |");
                 System.out.println("|   2. Load sample data                                       |");
                 System.out.println("|   3. Back to main menu                                      |");
@@ -87,8 +143,9 @@ public class Main {
                 System.out.print("   Choose an option: ");
                 int choiceMore = sc.nextInt();
                 sc.nextLine();
-                if(choiceMore == 1){
-
+                if (choiceMore == 1) {
+                    clearScreen();
+                    printBanner("MORE > RESET ALL DATA");
                     System.out.println("This process will delete all data");
                     System.out.println("Are you sure you want to continue? y/n :");
                     char choiceReset = sc.nextLine().charAt(0);
@@ -98,75 +155,84 @@ public class Main {
                         System.out.println(" -->   DELETE ALL DATA:");
                         String response = sc.nextLine();
 
-                        if (response.equals("DELETE ALL DATA"))  {
+                        if (response.equals("DELETE ALL DATA")) {
                             System.out.println("Deleting the data...");
                             boolean resetStatus = csvHandler.resetFile();
 
                             if (resetStatus == true) {
+                                account.setHistory(csvHandler.loadTransactions());
                                 System.out.println("Deletition Success!!!");
                                 System.out.println("Press Enter to go back to Main Menu");
                                 sc.nextLine();
                                 continue;
-                            }
-                            else{
+                            } else {
                                 System.out.println("Press Enter to go back to Main Menu");
                                 sc.nextLine();
                                 continue;
                             }
-                          
-                        }
-                        else {
+
+                        } else {
                             System.out.println("Confirmation Failed, Try Again.");
                             System.out.println("Press Enter to go back to Main Menu");
                             sc.nextLine();
                             continue;
                         }
-                    }
-                    else{
+                    } else {
                         System.out.println("Press Enter to go back to Main Menu");
                         sc.nextLine();
                         continue;
 
                     }
-                }
-                else if(choiceMore == 2){
+                } else if (choiceMore == 2) {
+                    clearScreen();
+                    printBanner("MORE  > LOAD SAMPLE DATA");
                     System.out.println("Feature not available yet");
                     System.out.println("Press \"ENTER\" to continue:");
                     sc.nextLine();
                     continue;
-                }
-                else if (choiceMore == 3) {
+                } else if (choiceMore == 3) {
                     System.out.println("press enter to go back to main menu:");
                     sc.nextLine();
                     continue;
-                }
-                else{
+                } else {
                     continue;
 
                 }
-            }
-            else if (choiceMain == 7) {
+            } else if (choiceMain == 7) {
                 System.out.println("Press \"ENTER\" to continue:");
                 sc.nextLine();
                 System.out.println("Exiting...");
                 sc.close();
                 System.exit(0);
-            }
-            else{
+            } else {
                 continue;
             }
 
-            
         }
     }
 
-    public static void clearScreen(){           //A method to clear terminal screen
+    public static void clearScreen() { // A method to clear terminal screen
         // System.out.print("\033[H\033[2J");
         // System.out.flush();
         try {
-            new ProcessBuilder("cmd","/c","cls").inheritIO().start().waitFor();
+            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
         } catch (Exception e) {
             System.out.println();
         }
+    }
+
+    public static void printBanner(String heading) {
+        DetailsHandler detailsHandler = new DetailsHandler();
+        UserDetails userDetails = detailsHandler.detailLoader();
+        System.out.println("+=============================================================+"); // 61 char space
+        System.out.println("|                 APEX FINANCIAL ENGINE                       |");
+        System.out.println("+=============================================================+"); // 61 char space
+        System.out.println("|  Name: " + String.format("%-15s", userDetails.getUserName()) + "     Account Number: "
+                + String.format("%-10s", userDetails.getAccountNumber()) + "       |");
+        System.out.println("| Gender: " + userDetails.getGender() + "     DOB: "
+                + String.format("%-10s", userDetails.getDateOfBirth()) + "  Phone Number: "
+                + String.format("%-10s", userDetails.getPhoneNumber()) + "     |");
+        System.out.println("+=============================================================+");
+        System.out.println("|  --> " + String.format("%-50S", heading) + "     |");
     }
 }

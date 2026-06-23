@@ -18,7 +18,7 @@ public class DetailsHandler {
             String genderRaw = reader.readLine(); // line 3
             String phoneRaw = reader.readLine();  // line 4
             reader.close();
-            return new UserDetails(accountNum, name, Integer.parseInt(dobRaw), genderRaw.charAt(0), Long.parseLong(phoneRaw));
+            return new UserDetails(accountNum, name, dobRaw, genderRaw.charAt(0), Long.parseLong(phoneRaw));
 
         } catch (IOException e) {
             System.out.println("Unable to Load the Transactions");

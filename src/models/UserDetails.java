@@ -4,10 +4,10 @@ public class UserDetails {
     private String userName;
     private long phoneNumber;
     private char gender;
-    private int dateOfBirth;
+    private String dateOfBirth;
     private String accountNumber;
 
-    public UserDetails(String accountNumber, String userName,int dateOfBirth, char gender, long phoneNumber){
+    public UserDetails(String accountNumber, String userName,String dateOfBirth, char gender, long phoneNumber){
         this.accountNumber = accountNumber;
         this.userName = userName;
         this.dateOfBirth = dateOfBirth;
@@ -27,7 +27,7 @@ public class UserDetails {
         return gender;
     }
 
-    public int getDateOfBirth() {
+    public String getDateOfBirth() {
         return dateOfBirth;
     }
 
@@ -47,7 +47,7 @@ public class UserDetails {
         this.gender = gender;
     }
 
-    public void setDateOfBirth(int dateOfBirth) {
+    public void setDateOfBirth(String dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
     }
 

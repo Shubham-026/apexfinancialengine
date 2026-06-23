@@ -34,8 +34,19 @@ import java.io.FileReader;
         }
 
 
-
-
+        public boolean appendTransaction(Transaction transaction){
+            try {
+                FileWriter writer = new FileWriter("src/dataset/dataset.csv", true);
+                String formatedTransaction = transaction.getId() +","+ transaction.getType() +","+ transaction.getAmount()+","+transaction.getCategory()+","+transaction.getDescription()+","+transaction.getTimestamp();
+                writer.write(formatedTransaction + "\n" );
+                writer.close();
+                return true;
+            } catch (IOException e) {
+                System.out.println("Something went wrong while trying to append transaction!!!");
+                System.out.println("Error: " + e.getMessage());
+                return false;
+            }
+        }
 
         public boolean resetFile(){
             try {
