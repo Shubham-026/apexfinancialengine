@@ -9,19 +9,19 @@ import java.io.FileReader;
 
     public class CSVHandler {
         
-        public ArrayList<Transaction> loadTransactions(){
+        public ArrayList<Transaction> loadTransactions(String fileName){
             String line;
             ArrayList<Transaction> loadedTransactions = new ArrayList<>();
             
             try {
-                BufferedReader reader = new BufferedReader(new FileReader("src/dataset/dataset.csv"));
+                BufferedReader reader = new BufferedReader(new FileReader(fileName));
                 reader.readLine(); // discard header row
                 while ((line = reader.readLine()) != null) {
                     String[] parts = line.split(",");
                     loadedTransactions.add(new Transaction(parts[0], TransactionType.valueOf(parts[1]), Double.parseDouble(parts[2]), parts[3],parts[4],Long.parseLong(parts[5])));
                 }
                 reader.close();
-
+                
                 return loadedTransactions;
             } catch (IOException e) {
                 System.out.println("Unable to Load the Transactions");
@@ -47,7 +47,7 @@ import java.io.FileReader;
                 return false;
             }
         }
-
+        
         public boolean resetFile(){
             try {
                 FileWriter writer = new FileWriter("src/dataset/dataset.csv");
@@ -60,6 +60,25 @@ import java.io.FileReader;
                 System.out.println("Error: " + e.getMessage());
                 return false;
             }
+        }
+        
+        public boolean loadSampleData(){
+            ArrayList<Transaction> sampleTransactions = loadTransactions("src/dataset/sampleData.csv");
+            boolean resetStatus = resetFile();
+            if (resetStatus) {
+                for (Transaction t : sampleTransactions) {
+                    appendTransaction(t);
+                }
+                return true;
+            } else {
+                System.out.println("some problem occured trying to reset file!!!");
+                // System.out.println(e.getMessage());
+                return false;   
+            } 
+        }
+
+        public Transaction getTransaction(){
+            return new Transaction(null, null, 0, null, null, 0);
         }
     }
         

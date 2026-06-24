@@ -4,9 +4,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import models.*;
 import storage.*;
+// import processing.*;
 
 public class Main {
-    @SuppressWarnings("resource")
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
         CSVHandler csvHandler = new CSVHandler();
@@ -14,7 +14,7 @@ public class Main {
         UserDetails userDetails = detailsHandler.detailLoader();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yy HH:mm:ss").withZone(ZoneId.systemDefault());
         Account account = new Account();
-        account.setHistory(csvHandler.loadTransactions());
+        account.setHistory(csvHandler.loadTransactions("src/dataset/dataset.csv"));
         while (true) {
             clearScreen();
             // System.out.println("Working directory: " + System.getProperty("user.dir"));
@@ -115,6 +115,8 @@ public class Main {
             } else if (choiceMain == 3) {
                 clearScreen();
                 printBanner("Search Transaction ");
+                System.err.println("Enter the Transaction no, eg. TXN0000");
+                
                 System.out.println("Feature not available yet");
                 System.out.println("Press \"ENTER\" to continue:");
                 sc.nextLine();
@@ -160,7 +162,7 @@ public class Main {
                             boolean resetStatus = csvHandler.resetFile();
 
                             if (resetStatus == true) {
-                                account.setHistory(csvHandler.loadTransactions());
+                                account.setHistory(csvHandler.loadTransactions("src/dataset/dataset.csv"));
                                 System.out.println("Deletition Success!!!");
                                 System.out.println("Press Enter to go back to Main Menu");
                                 sc.nextLine();
@@ -186,7 +188,19 @@ public class Main {
                 } else if (choiceMore == 2) {
                     clearScreen();
                     printBanner("MORE  > LOAD SAMPLE DATA");
-                    System.out.println("Feature not available yet");
+                    System.out.println(account.getHistory().size());
+                    if (account.getHistory().size() == 0) {
+                        if (csvHandler.loadSampleData()) {
+                            account.setHistory(csvHandler.loadTransactions("src/dataset/dataset.csv"));
+                            System.out.println("Sample data loaded successfully!!!");
+                        } else {
+                            System.out.println("Sample data loading failed!!!");
+                        }
+                        
+                    } else {
+                        System.out.println("Sample load not possible.");
+                        System.out.println("File already has a data.");
+                    }
                     System.out.println("Press \"ENTER\" to continue:");
                     sc.nextLine();
                     continue;
