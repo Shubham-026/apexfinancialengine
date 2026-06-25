@@ -1,6 +1,6 @@
 package processing;
 import models.*;
-import java.util.ArrayList;;
+import java.util.ArrayList;
 
 /**
  * SearchHandler coordinates the retrieval of financial records.
@@ -15,7 +15,7 @@ public class SearchHandler {
      * @param history The list of transactions to search through.
      * @return The matched Transaction object, or null if no match is found.
      */
-    public Transaction searchById(String targetId, ArrayList<Transaction> history){
+    public Transaction searchById(int targetId, ArrayList<Transaction> history){
         // Initialize boundaries for the binary search space
         int low = 0;
         int high =  history.size() - 1;
@@ -23,17 +23,17 @@ public class SearchHandler {
         int targetIndex = -1;
 
         // Loop to divide and conquer the search space
-        while (low < high) {
+        while (low <= high) {
             // Calculate the midpoint index of the current range
             mid = (high + low)/2;
             
             // Compare the numeric portion of the midpoint ID with the target ID
-            if (Integer.parseInt(history.get(mid).getId().substring(3)) == Integer.parseInt(targetId.substring(3))) {
+            if (Integer.parseInt(history.get(mid).getId().substring(3)) == targetId) {
                 targetIndex = mid;
                 break; // Target identified, break out of search loop
             } 
             // If mid-point ID is smaller than target, shift search to upper half
-            else if (Integer.parseInt(history.get(mid).getId().substring(3)) < Integer.parseInt(targetId.substring(3))) {
+            else if (Integer.parseInt(history.get(mid).getId().substring(3)) < targetId) {
                 low = mid + 1;
             } 
             // If mid-point ID is larger than target, shift search to lower half

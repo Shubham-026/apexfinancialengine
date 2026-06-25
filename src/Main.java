@@ -12,6 +12,12 @@ import processing.*;
  * user profile details, and transaction history interactions.
  */
 public class Main {
+    /**
+     * Executes the main application loop, displaying menus and delegating actions
+     * based on user input.
+     * * @param args Command line arguments (not used).
+     * @throws Exception if an error occurs during file or profile operations.
+     */
     public static void main(String[] args) throws Exception {
         // Initialize input reader for interactive CLI menus
         Scanner sc = new Scanner(System.in);
@@ -40,9 +46,8 @@ public class Main {
             System.out.println("|   2. New Transaction (Deposit/Expense)                      |");
             System.out.println("|   3. Search Transaction                                     |");
             System.out.println("|   4. Run Spend Analytics                                    |");
-            System.out.println("|   5. View Category Spending Breakdown                       |");
-            System.out.println("|   6. More                                                   |");
-            System.out.println("|   7. EXIT                                                   |");
+            System.out.println("|   5. More                                                   |");
+            System.out.println("|   6. EXIT                                                   |");
             System.out.println("+=============================================================+");
             System.out.print("      Choose an option:   ");
 
@@ -93,11 +98,11 @@ public class Main {
                 printBanner("New Transaction (Deposit/Expense)");
                 System.out.print("    DEPOSIT OR EXPENSE :   d/e?   ");
                 char transactionType = sc.nextLine().charAt(0);
-
+                
                 clearScreen();
-
+                
                 TransactionType type;
-
+                
                 // Set transaction properties depending on selected type
                 if ('d' == transactionType) {
                     printBanner("Transaction Type \"DEPOSIT\" ");
@@ -107,22 +112,38 @@ public class Main {
                 else if ('e' == transactionType) {
                     printBanner("Transaction Type \"EXPENSE\" ");
                     type = TransactionType.EXPENSE;
-
+                    
                 } 
                 
                 else {
                     // Fallback to menu if choice is invalid
+                    printBanner("New Transaction ");
                     System.out.println("    Wrong Choice");
                     System.out.println("    Press \"ENTER\" to go back to main menu:");
                     sc.nextLine();
                     continue;
-
+                    
                 }
-
+                
                 // Prompt user for financial details of transaction
                 System.out.print("Enter Amount:     ");
                 double transactionAmount = sc.nextDouble();
                 sc.nextLine();
+                
+                if (transactionAmount > account.getBalance()) {
+                    System.out.println("You don't have " + transactionAmount+" in your account");
+                    System.out.println("Your current balance is : " + account.getBalance());
+                    System.out.println("    Press \"ENTER\" to go back to main menu:");
+                    sc.nextLine();
+                    continue;
+                }
+                
+                else if (transactionAmount < 0) {
+                    System.out.println("You can't enter negative amount");
+                    System.out.println("    Press \"ENTER\" to go back to main menu:");
+                    sc.nextLine();
+                    continue;
+                }
 
                 System.out.print("Enter Category:   ");
                 String transactionCategory = sc.nextLine();
@@ -169,20 +190,34 @@ public class Main {
                 clearScreen();
                 printBanner("Search Transaction ");
                 System.out.print("    Enter the Transaction no, eg. TXN0000:    ");
+                String inputId = sc.nextLine();
+                String idPrefix = inputId.substring(0,3);
                 Transaction searchResult;
-                if ((searchResult = search.searchById(sc.nextLine(), account.getHistory())) != null) {
-                    System.out.println("    Search Result: Found!!! \n");
-                    System.out.println("    Transaction ID:     "+ searchResult.getId());
-                    System.out.println("    Transaction Type:   "+ searchResult.getType());
-                    System.out.println("    Amount:             "+ searchResult.getAmount());
-                    System.out.println("    Category:           "+ searchResult.getCategory());
-                    System.out.println("    Description:        "+ searchResult.getDescription());
-                    System.out.println("    Date & Time:        "+ formatter.format(Instant.ofEpochMilli(searchResult.getTimestamp())));
+                if (idPrefix.equals("TXN")) {
+                    try {
+                        int numericId = Integer.parseInt(inputId.substring(3));
+                        if ((searchResult = search.searchById(numericId, account.getHistory())) != null) {
+                            System.out.println("    Search Result: Found!!! \n");
+                            System.out.println("    Transaction ID:     "+ searchResult.getId());
+                            System.out.println("    Transaction Type:   "+ searchResult.getType());
+                            System.out.println("    Amount:             "+ searchResult.getAmount());
+                            System.out.println("    Category:           "+ searchResult.getCategory());
+                            System.out.println("    Description:        "+ searchResult.getDescription());
+                            System.out.println("    Date & Time:        "+ formatter.format(Instant.ofEpochMilli(searchResult.getTimestamp())));
+                        }
+                        else{
+                            System.out.println("NO Transaction found for the given Transaction ID!!! \n");
+                        }
+                        
+                    } catch (Exception e) {
+                        System.out.println("Some Error Occured" + e.getMessage());
+                    }
+                    
+                } else {
+                    System.out.println("Invalid Transaction ID");
                 }
+                // Query binary search handler for transaction details matching the user's target input ID
 
-                else{
-                    System.out.println("NO Transaction found for the given Transaction ID!!! \n");
-                }
                 System.out.println("    Press \"ENTER\" to continue:");
                 sc.nextLine();
                 continue;
@@ -192,33 +227,56 @@ public class Main {
             else if ("4".equals(choiceMain)) {      // Run Spend Analytics
                 clearScreen();
                 printBanner("Run Spend Analytics");
+                System.out.println("+=============================================================+");
+                SpendingAnalytics spendingAnalytics = new SpendingAnalytics();
+                SpendAnalysisResult result = spendingAnalytics.runSpendAnalytics(account.getHistory());
+                System.out.println("|   Category wise analysis :                                  |");
+                System.out.println("+==============================+==============================+");
+                System.out.println("|          CATEGORY            |            AMOUNT            |");
+                System.out.println("+------------------------------+------------------------------+");
+                // Output dynamically calculated aggregate spending per transaction category
+                for (Map.Entry<String , Double> entry : result.categoryTotals.entrySet()) {
+                    System.out.println("|     "+String.format("%-20s", entry.getKey())+"     |     "+ String.format("%-20.2f", entry.getValue())+"     |");
+                    System.out.println("+------------------------------+------------------------------+");
+                }
                 
-                // Placeholder - spend analytical models are not yet built
-                System.out.println("    Feature not available yet");
+                System.out.println();
+                System.out.println();
+                System.out.println("+=============================================================+");
+                System.out.println("|   ANALYSIS BASED ON EXPENSE/DEPOSIT :                       |");
+                System.out.println("+==============================+==============================+");
+                System.out.println("|       TOTAL EXPENSE          |          "+String.format("%-20.2f", result.typeTotals.get("EXPENSE"))+"|");
+                System.out.println("+==============================+==============================+");
+                System.out.println("|       TOTAL DEPOSIT          |          "+String.format("%-20.2f", result.typeTotals.get("DEPOSIT"))+"|");
+                System.out.println("+==============================+==============================+");
+                
+                System.out.println();
+                System.out.println();
+                System.out.println("+=============================================================+");
+                System.out.println("|   AVERAGE AND HIGHEST DEPOSIT/EXPENSE :                     |");
+                System.out.println("+==============================+==============================+");
+                System.out.println("|       HIGHEST DEPOSIT        |          "+String.format("%-20.4f", result.averagesAndHighest.get("Highest Deposit"))+"|");
+                System.out.println("+==============================+==============================+");
+                System.out.println("|       HIGHEST EXPENSE        |          "+String.format("%-20.4f", result.averagesAndHighest.get("Highest Expense"))+"|");
+                System.out.println("+==============================+==============================+");
+                System.out.println("|       AVERAGE DEPOSIT        |          "+String.format("%-20.4f", result.averagesAndHighest.get("Average Deposit"))+"|");
+                System.out.println("+==============================+==============================+");
+                System.out.println("|       AVERAGE EXPENSE        |          "+String.format("%-20.4f", result.averagesAndHighest.get("Average Expense"))+"|");
+                System.out.println("+==============================+==============================+");
+                
                 System.out.println("    Press \"ENTER\" to continue:");
                 sc.nextLine();
                 continue;
             } 
             
 
-            else if ("5".equals(choiceMain)) {      // VIEW SPENDING CATEGORY BREAKDOWN
-                clearScreen();
-                printBanner("View Category Spending Breakdown");
-                
-                // Placeholder - breakdown models are not yet built
-                System.out.println("    Feature not available yet");
-                System.out.println("    Press \"ENTER\" to continue:");
-                sc.nextLine();
-                continue;
-            } 
-            
-
-            else if ("6".equals(choiceMain)) {      // MORE
+            else if ("5".equals(choiceMain)) {      // MORE
                 clearScreen();
                 printBanner("MORE");    
                 System.out.println("|   1. Reset all data                                         |");
                 System.out.println("|   2. Load sample data                                       |");
-                System.out.println("|   3. Back to main menu                                      |");
+                System.out.println("|   3. Edit Profile                                           |");
+                System.out.println("|   4. Back to main menu                                      |");
                 System.out.println("+=============================================================+");
                 System.out.print("   Choose an option:      ");
                 String choiceMore = sc.nextLine();      // RESET ALL DATA
@@ -282,13 +340,57 @@ public class Main {
                     }
                 }
 
-                System.out.println("    press enter to go back to main menu:");
+                else if ("3".equals(choiceMore)) {
+                    
+                    clearScreen();
+                    printBanner("MORE > EDIT PROFILE");    
+                    System.out.println("|   1. NAME                                                   |");
+                    System.out.println("|   2. DATE OF BIRTH                                          |");
+                    System.out.println("|   3. PHONE NUMBER                                           |");
+                    System.out.println("|   4. Back to main menu                                      |");
+                    System.out.println("+=============================================================+");
+                    System.out.print("   Choose the field you want to edit :  ");
+
+                    String editChoice = sc.nextLine();
+
+                    // Choice 1: Modify User Full Name
+                    if ("1".equals(editChoice)){
+                        System.out.print("\n   Enter New Name : ");
+                        if (detailsHandler.editProfile(1 , sc.nextLine())) {
+                            System.out.println("Name Updated Successfully");
+                        }
+                    }
+                    // Choice 2: Modify User Date of Birth with formatted numeric sub-inputs
+                    else if ("2".equals(editChoice)) {
+                        System.out.print("\n   Enter New Date Of Birth : ");
+                        System.out.print("   Enter the Birth Date. eg 06 or 25 : ");
+                        String dateOfBirth = sc.nextLine() + "-";
+                        System.out.print("   Enter the Birth Month. eg 02 if Feb or 11 if Oct : ");
+                        dateOfBirth = dateOfBirth + sc.nextLine() + "-";
+                        System.out.print("   Enter the Birth Year. eg 2007 or 1986 : ");
+                        dateOfBirth = dateOfBirth + sc.nextLine() ;
+                        if (detailsHandler.editProfile(2 , dateOfBirth)) {
+                            System.out.println("Name Updated Successfully");
+                        }                   
+                    }
+                    // Choice 3: Modify User Primary Phone Number
+                    else if ("3".equals(editChoice)) {
+                        System.out.print("\n   Enter New Phone Number without country code : ");
+                        if (detailsHandler.editProfile(3 , sc.nextLine())) {
+                            System.out.println("Name Updated Successfully");
+                        }                   
+                        
+                    }
+                    
+                }
+
+                System.out.println("    Press enter to go back to main menu:");
                 sc.nextLine();
                 continue;
             } 
             
 
-            else if ("7".equals(choiceMain)) {      //EXIT
+            else if ("6".equals(choiceMain)) {      //EXIT
                 System.out.println("    Press \"ENTER\" to continue:");
                 sc.nextLine();
                 System.out.println("    Exiting...");
